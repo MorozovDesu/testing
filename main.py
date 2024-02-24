@@ -124,6 +124,7 @@ for _ in range(4):
     angle -= 90
 t.end_fill()
 
+# Площадь фигуры созданной окружностями
 range = radius1 + radius2
 print(range)
 areaSquare = pow(range, 2)
