@@ -22,8 +22,13 @@ def draw_circle(t, x, y, radius):
     t.circle(radius)
 
 # Функция для запуска программы
-def run_program():
+def run_program(canvas):
     # Устанавливаем максимальную скорость анимации
+    turtle.mode('logo')
+    t = turtle.RawTurtle(canvas)
+    # Устанавливаем размер диалогового окна черепахи
+    turtle.setup(1, 1)
+    t.ht()
     global range
     t.speed(0)
 
@@ -130,17 +135,39 @@ def run_program():
     print(areaСircle)
     areaFigure = areaSquare - areaСircle
     print(areaFigure)
-    turtle.done()
+    turtle.bye()
+    # turtle.done()
 
 
-# Создаем главное окно
+# Функция обработки нажатия кнопки
+def start_program(canvas):
+    run_program(canvas)
+
+# Функция для очистки черепахи
+def clear_canvas(t):
+    t.clear()
+
+# Функция обработки нажатия кнопки "Очистить"
+def clear_program(t, canvas):
+    clear_canvas(t)
+    # Очищаем область рисования
+    canvas.delete("all")
+
+# Создание главного окна
 root = tk.Tk()
-# Создаем экземпляр черепашки
+root.title("Программа с графическим интерфейсом")
 
-t = turtle.Turtle()
-# Добавляем кнопку запуска программы
-button = tk.Button(root, text="Запустить программу", command=run_program)
-button.pack()
-# Запускаем главное окно
+# Создание области для рисования
+canvas = tk.Canvas(root, width=400, height=400)
+canvas.pack()
+
+# Создание кнопки
+button = tk.Button(root, text="Запустить программу", command=lambda: start_program(canvas))
+button.pack(pady=20)
+
+# Создание кнопки для очистки
+clear_button = tk.Button(root, text="Очистить", command=lambda: clear_program(t, canvas))
+clear_button.pack(pady=20)
+
+# Запуск главного цикла обработки событий
 root.mainloop()
-
