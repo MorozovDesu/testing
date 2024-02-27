@@ -165,9 +165,9 @@ canvas.pack()
 button = tk.Button(root, text="Запустить программу", command=lambda: start_program(canvas))
 button.pack(pady=20)
 
-# Создание кнопки для очистки
-clear_button = tk.Button(root, text="Очистить", command=lambda: clear_program(t, canvas))
-clear_button.pack(pady=20)
+# # Создание кнопки для очистки
+# clear_button = tk.Button(root, text="Очистить", command=lambda: clear_program(t, canvas))
+# clear_button.pack(pady=20)
 
 # Запуск главного цикла обработки событий
 root.mainloop()
