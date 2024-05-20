@@ -27,7 +27,20 @@ def plot_figure_and_calculate_area(ax, r):
     overlap_area = 2 * r**2 * np.arccos(1/2) - r**2 * np.sqrt(3)
     total_overlap_area = 4 * overlap_area
     shaded_area = 4 * area_circle - total_overlap_area
+
+    # Координаты вершин заштрихованной области
+    d = np.sqrt(r**2 - (r/2)**2)
+    points = [
+        (0, r - d),
+        (d, 0),
+        (0, -r + d),
+        (-d, 0)
+    ]
     
+    # Рисуем заштрихованную область
+    polygon = plt.Polygon(points, color='red', alpha=0.5)
+    ax.add_patch(polygon)
+
     ax.set_title(f'Заштрихованная область: {shaded_area:.2f} кв.см')
     plt.draw()
     return shaded_area
