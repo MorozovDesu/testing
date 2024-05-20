@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.widgets import TextBox, Button
+from matplotlib.patches import PathPatch
+from matplotlib.path import Path
 
 def plot_figure_and_calculate_area(ax, r):
     ax.clear()
@@ -22,25 +24,34 @@ def plot_figure_and_calculate_area(ax, r):
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     
-    # Считаем площадь заштрихованной области
-    area_circle = np.pi * r**2
-    overlap_area = 2 * r**2 * np.arccos(1/2) - r**2 * np.sqrt(3)
-    total_overlap_area = 4 * overlap_area
-    shaded_area = 4 * area_circle - total_overlap_area
-
-    # Координаты вершин заштрихованной области
-    d = np.sqrt(r**2 - (r/2)**2)
-    points = [
-        (0, r - d),
-        (d, 0),
-        (0, -r + d),
-        (-d, 0)
-    ]
+    # Координаты вершин дуг пересечения
+    angles = np.linspace(0, np.pi/2, 100)
     
-    # Рисуем заштрихованную область
-    polygon = plt.Polygon(points, color='red', alpha=0.5)
-    ax.add_patch(polygon)
-
+    # Верхняя левая дуга
+    upper_left_arc = np.column_stack((r - r * np.cos(angles), r - r * np.sin(angles)))
+    
+    # Верхняя правая дуга
+    upper_right_arc = np.column_stack((-r + r * np.cos(angles), r - r * np.sin(angles)))
+    
+    # Нижняя правая дуга
+    lower_right_arc = np.column_stack((-r + r * np.cos(angles), -r + r * np.sin(angles)))
+    
+    # Нижняя левая дуга
+    lower_left_arc = np.column_stack((r - r * np.cos(angles), -r + r * np.sin(angles)))
+    
+    # Создаем путь для заштрихованной области
+    vertices = np.concatenate([upper_left_arc, upper_right_arc[::-1], lower_right_arc, lower_left_arc[::-1]])
+    codes = [Path.MOVETO] + [Path.LINETO]*(len(vertices) - 1)
+    
+    path = Path(vertices, codes)
+    patch = PathPatch(path, facecolor='red', alpha=0.5)
+    ax.add_patch(patch)
+    
+    # Вычисляем площадь заштрихованной области
+    area_circle = np.pi * r**2
+    overlap_area = 4 * (area_circle/4 - 0.5*r**2 + 0.5*r**2*np.sin(np.pi/4))
+    shaded_area = 4 * area_circle - overlap_area
+    
     ax.set_title(f'Заштрихованная область: {shaded_area:.2f} кв.см')
     plt.draw()
     return shaded_area
