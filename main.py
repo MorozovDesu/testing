@@ -1,173 +1,58 @@
-# Импортируем библиотеку turtle
-import turtle
-import math
-import tkinter as tk
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.widgets import TextBox, Button
 
-# Функция для вычисления расстояния между двумя точками
-def distance(x1, y1, x2, y2):
-    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+def plot_figure_and_calculate_area(ax, r):
+    ax.clear()
+    
+    # Центры окружностей
+    centers = [(r, r), (-r, r), (-r, -r), (r, -r)]
+    
+    # Рисуем окружности
+    for center in centers:
+        circle = plt.Circle(center, r, edgecolor='black', facecolor='none')
+        ax.add_patch(circle)
+    
+    # Настраиваем пределы осей и равные масштабы
+    ax.set_xlim(-2*r, 2*r)
+    ax.set_ylim(-2*r, 2*r)
+    ax.set_aspect('equal', 'box')
+    
+    # Подписи осей
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    
+    # Считаем площадь заштрихованной области
+    area_circle = np.pi * r**2
+    overlap_area = 2 * r**2 * np.arccos(1/2) - r**2 * np.sqrt(3)
+    total_overlap_area = 4 * overlap_area
+    shaded_area = 4 * area_circle - total_overlap_area
+    
+    ax.set_title(f'Заштрихованная область: {shaded_area:.2f} кв.см')
+    plt.draw()
+    return shaded_area
 
-# Функция для рисования точки
-def draw_point(t, x, y):
-    t.penup()
-    t.goto(x, y)
-    t.pendown()
-    t.dot(5)
+def submit_radius(event):
+    try:
+        r = float(text_box.text)
+        plot_figure_and_calculate_area(ax, r)
+    except ValueError:
+        pass
 
-# Функция для рисования окружности с помощью библиотеки turtle
-def draw_circle(t, x, y, radius):
-    t.penup()
-    t.goto(x, y - radius)
-    t.pendown()
-    t.circle(radius)
+fig, ax = plt.subplots()
+plt.subplots_adjust(bottom=0.25)
 
-# Функция для запуска программы
-def run_program(canvas):
-    # Устанавливаем максимальную скорость анимации
-    turtle.mode('logo')
-    t = turtle.RawTurtle(canvas)
-    # Устанавливаем размер диалогового окна черепахи
-    turtle.setup(1, 1)
-    t.ht()
-    global range
-    t.speed(0)
+# Начальные значения
+r = 5
+plot_figure_and_calculate_area(ax, r)
 
-    # Вводим параметры первой окружности
-    x1 = -50
-    y1 = 0
-    radius1 = 50
-    # Рисуем первую окружность
-    draw_circle(t, x1, y1, radius1)
+# Добавляем текстовое поле для ввода радиуса
+axbox = plt.axes([0.2, 0.05, 0.55, 0.075])
+text_box = TextBox(axbox, 'Радиус:', initial=str(r))
 
-    # Вводим параметры второй окружности
-    x2 = 50
-    y2 = 0
-    radius2 = 50
-    draw_circle(t, x2, y2, radius2)
+# Добавляем кнопку для подтверждения ввода
+axbutton = plt.axes([0.8, 0.05, 0.1, 0.075])
+button = Button(axbutton, 'Ввод')
+button.on_clicked(submit_radius)
 
-    # Вводим параметры третьей окружности
-    x3 = 50
-    y3 = 100
-    radius3 = 50
-    draw_circle(t, x3, y3, radius3)
-
-    # Вводим параметры четвертой окружности
-    x4 = -50
-    y4 = 100
-    radius4 = 50
-    draw_circle(t, x4, y4, radius4)
-
-    # Вводим параметры первой окружности
-    x1 = -50
-    y1 = 0
-    radius1 = 50
-    # Рисуем первую окружность
-    draw_circle(t, x1, y1, radius1)
-    # Рисуем точку пересечения 1 и 2 окружностей
-    theta1 = math.acos(
-        (radius1 ** 2 - radius2 ** 2 + distance(x1, y1, x2, y2) ** 2) / (2 * radius1 * distance(x1, y1, x2, y2)))
-    x_intersect_1_2 = x1 + radius1 * math.cos(theta1)
-    y_intersect_1_2 = y1 + radius1 * math.sin(theta1)
-    draw_point(t, x_intersect_1_2, y_intersect_1_2)
-
-    # Вводим параметры второй окружности
-    x2 = 50
-    y2 = 0
-    radius2 = 50
-    draw_circle(t, x2, y2, radius2)
-    # Рисуем точку пересечения 2 и 3 окружностей
-    theta2 = math.acos(
-        (radius2 ** 2 - radius3 ** 2 + distance(x2, y2, x3, y3) ** 2) / (2 * radius2 * distance(x2, y2, x3, y3)))
-    x_intersect_2_3 = x2 + radius2 * math.cos(math.pi / 2 - theta2)
-    y_intersect_2_3 = y2 + radius2 * math.sin(math.pi / 2 - theta2)
-    draw_point(t, x_intersect_2_3, y_intersect_2_3)
-
-    # Вводим параметры третьей окружности
-    x3 = 50
-    y3 = 100
-    radius3 = 50
-    draw_circle(t, x3, y3, radius3)
-    # Рисуем точку пересечения 3 и 4 окружностей
-    theta3 = math.acos(
-        (radius3 ** 2 - radius4 ** 2 + distance(x3, y3, x4, y4) ** 2) / (2 * radius3 * distance(x3, y3, x4, y4)))
-    x_intersect_3_4 = x3 + radius3 * math.cos(math.pi - theta3)
-    y_intersect_3_4 = y3 + radius3 * math.sin(math.pi - theta3)
-    draw_point(t, x_intersect_3_4, y_intersect_3_4)
-
-    # Вводим параметры четвертой окружности
-    x4 = -50
-    y4 = 100
-    radius4 = 50
-    draw_circle(t, x4, y4, radius4)
-    # Рисуем точку пересечения 4 и 1 окружностей
-    theta4 = math.acos(
-        (radius4 ** 2 - radius1 ** 2 + distance(x4, y4, x1, y1) ** 2) / (2 * radius4 * distance(x4, y4, x1, y1)))
-    x_intersect_4_1 = x4 + radius4 * math.cos(-math.pi / 2 - theta4)
-    y_intersect_4_1 = y4 + radius4 * math.sin(-math.pi / 2 - theta4)
-    draw_point(t, x_intersect_4_1, y_intersect_4_1)
-
-    # t.speed(10)
-    # Перемещаем черепаху в точку пересечения 1 и 2 окружностей
-    t.penup()
-    t.setposition(x_intersect_1_2, y_intersect_1_2)
-    t.pendown()
-    # Устанавливаем цвет пера в красный
-    t.color("red")
-    t.begin_fill()
-    # Начальный угол поворота
-    angle = 90
-    # Цикл для рисования четвертей окружностей
-    for _ in range(4):
-        # Направляем черепаху в нужное направление (против часовой стрелки)
-        t.setheading(math.degrees(theta1) - angle)
-        # Рисуем четверть окружности
-        t.circle(radius4, - 90)
-        # Уменьшаем угол на 10 градусов
-        angle -= 90
-    t.end_fill()
-
-    # Площадь фигуры созданной окружностями
-    rangeRadius = radius1 + radius2
-    print(rangeRadius)
-    areaSquare = pow(rangeRadius, 2)
-    print(areaSquare / 4)
-    areaСircle = math.pi * pow(radius1, 2)
-    print(areaСircle)
-    areaFigure = areaSquare - areaСircle
-    print(areaFigure)
-    turtle.bye()
-    # turtle.done()
-
-
-# Функция обработки нажатия кнопки
-def start_program(canvas):
-    run_program(canvas)
-
-# Функция для очистки черепахи
-def clear_canvas(t):
-    t.clear()
-
-# Функция обработки нажатия кнопки "Очистить"
-def clear_program(t, canvas):
-    clear_canvas(t)
-    # Очищаем область рисования
-    canvas.delete("all")
-
-# Создание главного окна
-root = tk.Tk()
-root.title("Программа с графическим интерфейсом")
-
-# Создание области для рисования
-canvas = tk.Canvas(root, width=400, height=400)
-canvas.pack()
-
-# Создание кнопки
-button = tk.Button(root, text="Запустить программу", command=lambda: start_program(canvas))
-button.pack(pady=20)
-
-# # Создание кнопки для очистки
-# clear_button = tk.Button(root, text="Очистить", command=lambda: clear_program(t, canvas))
-# clear_button.pack(pady=20)
-
-# Запуск главного цикла обработки событий
-root.mainloop()
+plt.show()
