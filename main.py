@@ -44,19 +44,22 @@ def plot_figure_and_calculate_area(ax, r):
     area_circle = np.pi * (r / 2 )** 2
     overlap_area = r ** 2 
     shaded_area =  overlap_area - area_circle
-    print(area_circle)
-    print(overlap_area)
     ax.set_title(f'Заштрихованная область: {shaded_area:.2f} кв.см')
     plt.draw()
     return shaded_area
 
 def submit_radius(event):
+    error_text.set_text('')
     try:
         r = float(text_box.text)
-        if 0 < r <= 100000:
+        if r <= 0:
+            error_text.set_text('Ошибка: Радиус должен быть положительным числом.')
+        elif r > 100000:
+            error_text.set_text('Ошибка: Радиус слишком велик.')
+        else:
             plot_figure_and_calculate_area(ax, r)
     except ValueError:
-        pass
+        error_text.set_text('Ошибка: Введите корректное числовое значение радиуса.')
 
 fig, ax = plt.subplots()
 plt.subplots_adjust(bottom=0.25)
@@ -74,8 +77,10 @@ axbutton = plt.axes([0.8, 0.05, 0.15, 0.075])
 button = Button(axbutton, 'Рассчитать')
 button.on_clicked(submit_radius)
 
-plt.show()
+# Добавляем текст для отображения сообщений об ошибках
+error_text = ax.text(0.5, -0.19, '', transform=ax.transAxes, color='red', ha='center')
 
+plt.show()
 
 
 # Отображение фигур в данном коде осуществляется с использованием библиотеки Matplotlib. Более конкретно, используются следующие классы и функции из этой библиотеки:
